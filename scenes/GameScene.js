@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { preloadAssets } from "./utils/preloadAssets";
 import { setupMap } from "./utils/SetupMap";
 import { Pathfinding } from "./utils/pathfinding";
-import { createCards, selectCard, highlightAllowedArea, isValidCoordinate, moveCardToTarget } from "../components/CardActions";
+import { setupCards, selectCard, highlightAllowedArea, isValidCoordinate, moveCardToTarget } from "../components/CardActions";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -38,8 +38,8 @@ class GameScene extends Phaser.Scene {
 
     this.pathfinding = new Pathfinding(map, bgLayer, object1);
 
-    // Integrate the createCards function
-    createCards(this);
+    // Integrate the cards setup
+    setupCards(this);
   }
 
   update() {

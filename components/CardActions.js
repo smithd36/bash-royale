@@ -1,38 +1,6 @@
-export function createCards(scene) {
+export function setupCards(scene) {
   const cards = ['glow', 'heat', 'sonny', 'pink', 'rat'];
-  cards.forEach(card => {
-    scene.anims.create({
-      key: `${card}_walk_forward`,
-      frames: scene.anims.generateFrameNumbers(card, { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    });
-    scene.anims.create({
-      key: `${card}_walk_left`,
-      frames: scene.anims.generateFrameNumbers(card, { start: 4, end: 7 }),
-      frameRate: 10,
-      repeat: -1
-    });
-    scene.anims.create({
-      key: `${card}_walk_right`,
-      frames: scene.anims.generateFrameNumbers(card, { start: 8, end: 11 }),
-      frameRate: 10,
-      repeat: -1
-    });
-    scene.anims.create({
-      key: `${card}_walk_back`,
-      frames: scene.anims.generateFrameNumbers(card, { start: 12, end: 15 }),
-      frameRate: 10,
-      repeat: -1
-    });
-
-    scene.anims.create({
-      key: `${card}_walk_still`,
-      frames: scene.anims.generateFrameNumbers(card, { start: 1, end: 1 }),
-      frameRate: 0,
-      repeat: 0
-    });
-  });
+  createCardAnimations(scene, cards);
 
   const cardPositions = [
     { x: 32, y: 400 },
@@ -111,20 +79,23 @@ scene.input.on('dragend', (pointer, gameObject) => {
         return deltaY > 0 ? 'forward' : 'back';  // Adjust these based on your game's coordinate system
     }
   }
+}
 
-
-  // Click events
-  scene.input.on('pointerdown', (pointer) => {
-    if (scene.selectedCard) {
-      clearHighlightedArea(scene.selectedCard);
-      scene.selectedCard = null;
-    } else {
-      // Check if the click was on a card
-      const card = scene.cards.find(c => c.getBounds().contains(pointer.x, pointer.y));
-      if (card) {
-        selectCard(scene, pointer, card);
-      }
-    }
+function createCardAnimations(scene, card) {
+  const directions = ['forward', 'left', 'right', 'back'];
+  directions.forEach((dir, index) => {
+      scene.anims.create({
+          key: `${card}_walk_${dir}`,
+          frames: scene.anims.generateFrameNumbers(card, { start: index * 4, end: (index * 4) + 3 }),
+          frameRate: 10,
+          repeat: -1
+      });
+  });
+  scene.anims.create({
+      key: `${card}_walk_still`,
+      frames: scene.anims.generateFrameNumbers(card, { start: 1, end: 1 }),
+      frameRate: 0,
+      repeat: 0
   });
 }
 
