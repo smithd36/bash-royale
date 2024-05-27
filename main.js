@@ -3,8 +3,8 @@ import Phaser from "phaser";
 import GameScene from "./scenes/GameScene";
 
 const sizes = {
-  width: 800,
-  height: 600,
+  width: 320,
+  height: 540,
 };
 
 const config = {

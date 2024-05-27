@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import { preloadAssets } from "./utils/preloadAssets";
 import { setupMap } from "./utils/SetupMap";
 import { Pathfinding } from "./utils/pathfinding";
-import { createCards, selectCard, highlightAllowedArea, isValidCoordinate } from "../components/CardActions";
+import { createCards, selectCard, highlightAllowedArea, clearHighlightedArea, isValidCoordinate } from "../components/CardActions";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -92,6 +92,7 @@ class GameScene extends Phaser.Scene {
           console.log("Path not found");
         } else {
           this.moveAlongPath(card, path);
+          clearHighlightedArea(card); // Clear the highlighted area as movement starts
         }
       });
     } else {
