@@ -18,7 +18,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    preloadAssets.call(this);
+    preloadAssets(this);
   }
 
   create() {
@@ -40,6 +40,9 @@ class GameScene extends Phaser.Scene {
 
     // Integrate the createCards function
     createCards(this);
+  }
+
+  update() {
   }
 }
 export default GameScene;

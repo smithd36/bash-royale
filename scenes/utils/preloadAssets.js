@@ -1,22 +1,16 @@
 // scenes/utils/preloadAssets.js
 
-export function preloadAssets() {
-  this.player_w = 64;
-  this.player_h = 64;
-  this.tile_w = 64;
-  this.tile_h = 90;
+export function preloadAssets(scene) {
+  scene.load.image('forestTree', 'items/forest_tree.png');
+  scene.load.image('grass_tile', 'tiles/basic_tile.png');
+  scene.load.image('shrubsheet', 'items/shrubsheet.png');
+  scene.load.image('tower1', 'towers/tower.png');
 
-  this.load.image('tiles', 'tiles/tiles_1.png');
-  this.load.image('hex_sheet', 'tiles/hex_tilesheet.png');
-  this.load.image('brown_tree', 'items/brown_tree.png');
-  this.load.image('tower', 'towers/brick_house_2.png');
-  this.load.image('flags', 'items/flags-sprites.png');
+  scene.load.tilemapTiledJSON('map', '../../resources/hexMap.json');
 
-  this.load.tilemapTiledJSON('map', '../../resources/hexMap.json');
-
-  this.load.spritesheet('glow', 'cards/glow.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-  this.load.spritesheet('heat', 'cards/heat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-  this.load.spritesheet('pink', 'cards/pink.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-  this.load.spritesheet('sonny', 'cards/sonny.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-  this.load.spritesheet('rat', 'cards/rat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+  scene.load.spritesheet('glow', 'cards/glow.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('heat', 'cards/heat.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('pink', 'cards/pink.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('sonny', 'cards/sonny.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('rat', 'cards/rat.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
 }
