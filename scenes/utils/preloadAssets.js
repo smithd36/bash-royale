@@ -10,6 +10,7 @@ export function preloadAssets() {
   this.load.image('hex_sheet', 'tiles/hex_tilesheet.png');
   this.load.image('brown_tree', 'items/brown_tree.png');
   this.load.image('tower', 'towers/tower.png');
+  this.load.image('flags', 'items/flags-sprites.png');
 
   this.load.tilemapTiledJSON('map', '../../resources/hexMap.json');
 

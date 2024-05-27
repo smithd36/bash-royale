@@ -55,22 +55,51 @@ export function createCards(scene) {
     card.on('pointerdown', (pointer) => {
       selectCard(scene, pointer, card);
     });
+
+    // Enable dragging
+    scene.input.setDraggable(card);
   
     return card;
   });
 
-  scene.input.on('gameobjectdown', (pointer, gameObject) => {
-    selectCard(scene, pointer, gameObject);
+  /// Drag events
+  scene.input.on('dragstart', (pointer, gameObject) => {
+    if (scene.selectedCard && scene.selectedCard !== gameObject) {
+      clearHighlightedArea(scene.selectedCard);
+    }
+    scene.selectedCard = gameObject;
+    highlightAllowedArea(scene, gameObject);
   });
+
+  scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+    // Follow cursor only, do not drop the character immediately
+      gameObject.x = dragX;
+      gameObject.y = dragY;
+    });
+
+    scene.input.on('dragend', (pointer, gameObject) => {
+      // Clear any highlighted areas
+      clearHighlightedArea(gameObject);
+  
+      // Calculate the target grid positions based on where the drag ended
+      const targetGridX = Math.floor(pointer.x / scene.tile_w);
+      const targetGridY = Math.floor(pointer.y / scene.tile_h);
+  
+      // Adjust gameObject's position to the grid (snapping to grid center)
+      gameObject.x = targetGridX * scene.tile_w + scene.tile_w / 2;
+      gameObject.y = targetGridY * scene.tile_h + scene.tile_h / 2;
+  
+      // Use the preexisting function to move the card
+      // Ensure to pass the grid coordinates, not pixel coordinates
+      moveCardToTarget(gameObject.getData('cardKey'), targetGridX, targetGridY, scene);
+  });
+  
 }
 
 export function selectCard(scene, pointer, gameObject) {
-  if (scene.selectedCard) {
-    // If there is a previously selected card, clear highlights
+  if (scene.selectedCard && scene.selectedCard !== gameObject) {
     clearHighlightedArea(scene.selectedCard);
   }
-
-  // Set the new selected card
   scene.selectedCard = gameObject;
   highlightAllowedArea(scene, gameObject);
 }
@@ -120,6 +149,98 @@ function highlightTile(scene, card, startX, startY, dx, dy) {
     const rect = scene.add.rectangle(worldX, worldY, scene.tile_w, scene.tile_h, 0x00ff00, 0.2);
     card.highlightedTiles.push(rect);
   }
+}
+
+
+export function moveCardToTarget(cardKey, targetX, targetY, scene) {
+  const card = scene.cards.find(c => c.getData('cardKey') === cardKey);
+  if (!card) return;
+
+  const startX = Math.floor(card.x / scene.tile_w);
+  const startY = Math.floor(card.y / scene.tile_h);
+
+  // Convert targetX and targetY from pixels to grid coordinates
+  const targetGridX = Math.floor(targetX / scene.tile_w);
+  const targetGridY = Math.floor(targetY / scene.tile_h);
+
+  // Calculate distance to target
+  const distance = Math.abs(targetGridX - startX) + Math.abs(targetGridY - startY);
+  const allowedRange = card.getData('movementRange');
+
+  if (distance > allowedRange) {
+    console.error("Target is out of range");
+    return;
+  }
+
+  const allowedDirections = card.getData('movementDirections');
+  const dx = targetGridX - startX;
+  const dy = targetGridY - startY;
+
+  let direction;
+  if (dx > 0) direction = 'right';
+  else if (dx < 0) direction = 'left';
+  else if (dy > 0) direction = 'forward';
+  else if (dy < 0) direction = 'back';
+
+  if (!allowedDirections.includes(direction)) {
+    console.error("Direction not allowed");
+    return;
+  }
+
+  if (isValidCoordinate(scene, startX, startY) && isValidCoordinate(scene, targetGridX, targetGridY)) {
+    scene.pathfinding.findPath(startX, startY, targetGridX, targetGridY, (path) => {
+      if (path === null) {
+        console.log("Path not found");
+      } else {
+        moveAlongPath(scene, card, path);
+      }
+    });
+  } else {
+    console.error("Start or target coordinate is out of bounds");
+  }
+}
+
+export function moveAlongPath(scene, card, path) {
+  let waypointIndex = 0;
+
+  const moveToNextWaypoint = () => {
+    if (waypointIndex < path.length) {
+    const { x, y } = path[waypointIndex];
+    const worldX = x * scene.tile_w + scene.tile_w / 2;
+    const worldY = y * scene.tile_h + scene.tile_h / 2;
+    const duration = 1000; // Adjust duration as needed
+
+    // Determine direction for the current segment
+    let direction = 'still'; // Default direction
+    if (waypointIndex + 1 < path.length) {
+      const nextWaypoint = path[waypointIndex + 1];
+      if (nextWaypoint.y < y) direction = 'back';
+      else if (nextWaypoint.y > y) direction = 'forward';
+      else if (nextWaypoint.x < x) direction = 'left';
+      else if (nextWaypoint.x > x) direction = 'right';
+    }
+
+    // Play corresponding animation
+    card.play(`${card.getData('cardKey')}_walk_${direction}`);
+
+    scene.tweens.add({
+      targets: card,
+      x: worldX,
+      y: worldY,
+      duration: duration,
+      onComplete: () => {
+        waypointIndex++;
+        if (waypointIndex < path.length) {
+          moveToNextWaypoint();
+        } else {
+            card.play(`${card.getData('cardKey')}_walk_still`);
+        }
+      }
+    });
+  }
+};
+
+moveToNextWaypoint();
 }
 
 export function isValidCoordinate(scene, x, y) {
