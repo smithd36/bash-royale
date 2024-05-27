@@ -40,15 +40,6 @@ class GameScene extends Phaser.Scene {
 
     // Integrate the createCards function
     createCards(this);
-
-    // Handle target selection and movement
-    this.input.on('pointerdown', (pointer) => {
-      if (this.selectedCard) {
-        const targetX = pointer.worldX;
-        const targetY = pointer.worldY;
-        moveCardToTarget(this.selectedCard.getData('cardKey'), targetX, targetY, this);
-      }
-    });
   }
 }
 export default GameScene;

@@ -3,12 +3,12 @@
  "infinite":false,
  "layers":[
         {
-         "data":[43, 51, 50, 51, 43,
-            43, 51, 50, 51, 43,
-            43, 51, 50, 51, 43,
-            43, 51, 50, 51, 43,
-            43, 51, 50, 51, 43,
-            43, 51, 50, 51, 43],
+         "data":[38, 46, 45, 46, 38,
+            38, 46, 45, 46, 38,
+            38, 46, 45, 46, 38,
+            38, 46, 45, 46, 38,
+            38, 46, 45, 46, 38,
+            38, 46, 45, 46, 38],
          "height":6,
          "id":8,
          "name":"tiles",
@@ -20,12 +20,12 @@
          "y":0
         }, 
         {
-         "data":[0, 2147483702, 2147483702, 2147483702, 0,
-            26, 0, 0, 0, 26,
-            32, 2, 2, 2, 31,
-            30, 0, 0, 0, 32,
-            18, 0, 0, 0, 18,
-            0, 1073741878, 1073741878, 1073741878, 0],
+         "data":[49, 2147483696, 49, 2147483696, 49,
+            0, 0, 0, 0, 0,
+            18, 0, 2684354608, 0, 18,
+            22, 0, 1610612784, 0, 22,
+            0, 0, 0, 0, 0,
+            1073741873, 1073741872, 1073741873, 1073741872, 1073741873],
          "height":6,
          "id":9,
          "name":"object1",
@@ -46,19 +46,6 @@
         {
          "columns":1,
          "firstgid":1,
-         "image":"..\/public\/items\/flag-sprites.png",
-         "imageheight":90,
-         "imagewidth":64,
-         "margin":0,
-         "name":"flags",
-         "spacing":0,
-         "tilecount":5,
-         "tileheight":16,
-         "tilewidth":64
-        }, 
-        {
-         "columns":1,
-         "firstgid":6,
          "image":"..\/public\/towers\/tower_2.png",
          "imageheight":90,
          "imagewidth":64,
@@ -71,7 +58,7 @@
         }, 
         {
          "columns":5,
-         "firstgid":7,
+         "firstgid":2,
          "image":"..\/public\/tiles\/hex_tilesheet.png",
          "imageheight":540,
          "imagewidth":320,
@@ -84,7 +71,7 @@
         }, 
         {
          "columns":4,
-         "firstgid":37,
+         "firstgid":32,
          "image":"..\/public\/tiles\/tiles_1.png",
          "imageheight":360,
          "imagewidth":256,
@@ -97,7 +84,7 @@
         }, 
         {
          "columns":1,
-         "firstgid":53,
+         "firstgid":48,
          "image":"..\/public\/items\/brown_tree.png",
          "imageheight":90,
          "imagewidth":64,
@@ -107,11 +94,10 @@
          "tilecount":1,
          "tileheight":90,
          "tilewidth":64
-        },
-    
+        }, 
         {
          "columns":1,
-         "firstgid":54,
+         "firstgid":49,
          "image":"..\/public\/towers\/brick_house_2.png",
          "imageheight":64,
          "imagewidth":64,

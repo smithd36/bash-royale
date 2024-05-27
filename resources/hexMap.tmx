@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="5" height="6" tilewidth="64" tileheight="90" infinite="0" nextlayerid="10" nextobjectid="1">
- <tileset firstgid="1" name="flags" tilewidth="64" tileheight="16" tilecount="5" columns="1">
-  <image source="../public/items/flag-sprites.png" width="64" height="90"/>
- </tileset>
- <tileset firstgid="6" name="tower1" tilewidth="64" tileheight="90" tilecount="1" columns="1">
+ <editorsettings>
+  <export target="hexMap.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="tower1" tilewidth="64" tileheight="90" tilecount="1" columns="1">
   <image source="../public/towers/tower_2.png" width="64" height="90"/>
  </tileset>
- <tileset firstgid="7" name="hex_sheet" tilewidth="64" tileheight="90" tilecount="30" columns="5">
+ <tileset firstgid="2" name="hex_sheet" tilewidth="64" tileheight="90" tilecount="30" columns="5">
   <image source="../public/tiles/hex_tilesheet.png" width="320" height="540"/>
  </tileset>
- <tileset firstgid="37" name="tiles_1" tilewidth="64" tileheight="90" tilecount="16" columns="4">
+ <tileset firstgid="32" name="tiles_1" tilewidth="64" tileheight="90" tilecount="16" columns="4">
   <image source="../public/tiles/tiles_1.png" width="256" height="360"/>
  </tileset>
- <tileset firstgid="53" name="brown_tree" tilewidth="64" tileheight="90" tilecount="1" columns="1">
+ <tileset firstgid="48" name="brown_tree" tilewidth="64" tileheight="90" tilecount="1" columns="1">
   <image source="../public/items/brown_tree.png" width="64" height="90"/>
  </tileset>
- <tileset firstgid="54" name="brick_house_2" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+ <tileset firstgid="49" name="brick_house_2" tilewidth="64" tileheight="64" tilecount="1" columns="1">
   <image source="../public/towers/brick_house_2.png" width="64" height="64"/>
  </tileset>
  <layer id="8" name="tiles" width="5" height="6">
   <data encoding="csv">
-43,51,50,51,43,
-43,51,50,51,43,
-43,51,50,51,43,
-43,51,50,51,43,
-43,51,50,51,43,
-43,51,50,51,43
+38,46,45,46,38,
+38,46,45,46,38,
+38,46,45,46,38,
+38,46,45,46,38,
+38,46,45,46,38,
+38,46,45,46,38
 </data>
  </layer>
  <layer id="9" name="object1" width="5" height="6">
   <data encoding="csv">
-0,2147483702,2147483702,2147483702,0,
-26,0,0,0,26,
-32,2,2,2,31,
-30,0,0,0,32,
-18,0,0,0,18,
-0,1073741878,1073741878,1073741878,0
+49,2147483696,49,2147483696,49,
+0,0,0,0,0,
+18,0,2684354608,0,18,
+22,0,1610612784,0,22,
+0,0,0,0,0,
+1073741873,1073741872,1073741873,1073741872,1073741873
 </data>
  </layer>
 </map>
