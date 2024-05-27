@@ -1,7 +1,10 @@
 import Phaser from "phaser";
-import CardInterface from "./CardInterface";
+import { preloadAssets } from "./utils/preloadAssets";
+import { setupMap } from "./utils/SetupMap";
+import { Pathfinding } from "./utils/pathfinding";
+import { createCards, selectCard, highlightAllowedArea, isValidCoordinate } from "../components/CardActions";
 
-export default class GameScene extends Phaser.Scene {
+class GameScene extends Phaser.Scene {
   constructor() {
     super("scene-game");
     this.tile_w = 64;
@@ -10,44 +13,135 @@ export default class GameScene extends Phaser.Scene {
     this.player_h = 64;
     this.cursor;
     this.target;
+    this.pathfinding = null;
+    this.selectedCard = null; // Track the selected card
   }
 
   preload() {
-    // Load in the tiles/map
-    this.load.image('tiles', 'tiles/tiles_1.png');
-    this.load.image('hex_sheet', 'tiles/hex_tilesheet.png');
-    this.load.image('brown_tree', 'items/brown_tree.png');
-    this.load.image('tower', 'towers/tower.png');
-
-    this.load.tilemapTiledJSON('map', 'resources/hexMap.json');
-
-    // Load card sprites
-    this.load.spritesheet('glow', 'cards/glow.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-    this.load.spritesheet('heat', 'cards/heat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-    this.load.spritesheet('pink', 'cards/pink.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-    this.load.spritesheet('sonny', 'cards/sonny.png', { frameWidth: this.player_w, frameHeight: this.player_h });
-    this.load.spritesheet('rat', 'cards/rat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    preloadAssets.call(this);
   }
 
   create() {
-    // map
-    const map = this.make.tilemap({ key: "map" });
+    const mapSetup = setupMap.call(this);
 
-    // Add tileset image to the map
-    const tiles = map.addTilesetImage('tiles_1', 'tiles');
-    const hex_sheet = map.addTilesetImage('hex_sheet', 'hex_sheet');
-    const brown_tree = map.addTilesetImage('brown_tree', 'brown_tree');
-    const tower = map.addTilesetImage('tower3', 'tower');
+    if (!mapSetup) {
+      console.error('Map setup failed');
+      return;
+    }
 
-    // Layers
-    const bgLayer = map.createLayer('tiles', [tiles, hex_sheet, brown_tree, tower], 0, 0);
-    const object1 = map.createLayer('object1', [tiles, hex_sheet, brown_tree, tower], 0, 0);
+    const { map, bgLayer, object1 } = mapSetup;
 
-    // Create the card interface
-    this.cardInterface = new CardInterface(this, ['glow', 'heat', 'sonny', 'pink', 'rat']);
+    if (!map || !bgLayer) {
+      console.error('Map or background layer is not defined.');
+      return;
+    }
+
+    this.pathfinding = new Pathfinding(map, bgLayer, object1);
+
+    // Integrate the createCards function
+    createCards(this);
+
+    // Handle target selection and movement
+    this.input.on('pointerdown', (pointer) => {
+      if (this.selectedCard) {
+        const targetX = pointer.worldX;
+        const targetY = pointer.worldY;
+        this.moveCardToTarget(this.selectedCard.getData('cardKey'), targetX, targetY);
+      }
+    });
   }
 
-  update() {
-    // Game update logic...
+  moveCardToTarget(cardKey, targetX, targetY) {
+    const card = this.cards.find(c => c.getData('cardKey') === cardKey);
+    if (!card) return;
+
+    const startX = Math.floor(card.x / this.tile_w);
+    const startY = Math.floor(card.y / this.tile_h);
+
+    // Convert targetX and targetY from pixels to grid coordinates
+    const targetGridX = Math.floor(targetX / this.tile_w);
+    const targetGridY = Math.floor(targetY / this.tile_h);
+
+    // Calculate distance to target
+    const distance = Math.abs(targetGridX - startX) + Math.abs(targetGridY - startY);
+    const allowedRange = card.getData('movementRange');
+
+    if (distance > allowedRange) {
+      console.error("Target is out of range");
+      return;
+    }
+
+    const allowedDirections = card.getData('movementDirections');
+    const dx = targetGridX - startX;
+    const dy = targetGridY - startY;
+
+    let direction;
+    if (dx > 0) direction = 'right';
+    else if (dx < 0) direction = 'left';
+    else if (dy > 0) direction = 'forward';
+    else if (dy < 0) direction = 'back';
+
+    if (!allowedDirections.includes(direction)) {
+      console.error("Direction not allowed");
+      return;
+    }
+
+    if (isValidCoordinate(this, startX, startY) && isValidCoordinate(this, targetGridX, targetGridY)) {
+      this.pathfinding.findPath(startX, startY, targetGridX, targetGridY, (path) => {
+        if (path === null) {
+          console.log("Path not found");
+        } else {
+          this.moveAlongPath(card, path);
+        }
+      });
+    } else {
+      console.error("Start or target coordinate is out of bounds");
+    }
+  }
+
+  moveAlongPath(card, path) {
+    let waypointIndex = 0;
+
+    const moveToNextWaypoint = () => {
+      if (waypointIndex < path.length) {
+        const { x, y } = path[waypointIndex];
+        const worldX = x * this.tile_w + this.tile_w / 2;
+        const worldY = y * this.tile_h + this.tile_h / 2;
+        const duration = 1000; // Adjust duration as needed
+
+        // Determine direction
+        const nextWaypoint = path[waypointIndex + 1];
+        let direction = 'still';
+        if (nextWaypoint) {
+          if (nextWaypoint.y < y) direction = 'back';
+          else if (nextWaypoint.y > y) direction = 'forward';
+          else if (nextWaypoint.x < x) direction = 'left';
+          else if (nextWaypoint.x > x) direction = 'right';
+        }
+
+        // Play corresponding animation
+        const cardKey = card.getData('cardKey');
+        card.play(`${cardKey}_walk_${direction}`);
+
+        this.tweens.add({
+          targets: card,
+          x: worldX,
+          y: worldY,
+          duration: duration,
+          onComplete: () => {
+            waypointIndex++;
+            moveToNextWaypoint();
+          }
+        });
+      } else {
+        // Stop animation at the end of the path
+        const cardKey = card.getData('cardKey');
+        card.play(`${cardKey}_walk_still`);
+      }
+    };
+
+    moveToNextWaypoint();
   }
 }
+
+export default GameScene;

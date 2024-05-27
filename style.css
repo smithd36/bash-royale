@@ -43,7 +43,7 @@ h1 {
   line-height: 1.1;
 }
 
-#game-canvas {
+#gameCanvas {
   display: flex;
   justify-content: center;
   align-items: center;
