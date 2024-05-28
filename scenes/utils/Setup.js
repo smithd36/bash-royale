@@ -1,5 +1,5 @@
 // scenes/utils/setupMap.js
-import { createCardAnimations, cardDefinitions, addEvents, selectCard, moveCardToTarget } from "../../components/CardActions";
+import { createCardAnimations, cardDefinitions, selectCard, moveCardToTarget } from "../../components/CardActions";
 
 export function setupMap() {
   const map = this.make.tilemap({ key: "map" });
@@ -56,7 +56,4 @@ export function setupCards(scene) {
     
       return card;
     });
-  
-    /// Add click and drag events (player interation)
-    addEvents(scene);
   }

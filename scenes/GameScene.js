@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { preloadAssets } from "./utils/preloadAssets";
 import { setupMap, setupCards } from "./utils/Setup";
 import { Pathfinding } from "./utils/pathfinding";
+import { addEvents } from "../components/CardActions";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -39,6 +40,7 @@ class GameScene extends Phaser.Scene {
 
     // Integrate with the cards
     setupCards(this);
+    addEvents(this);
   }
 
   update() {

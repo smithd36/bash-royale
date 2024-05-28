@@ -25,7 +25,7 @@ export function addEvents(scene) {
   scene.input.on('dragend', (pointer, gameObject) => {
       const finalGridX = Math.floor(pointer.x / scene.tile_w);
       const finalGridY = Math.floor(pointer.y / scene.tile_h);
-      if (isValidMove(gameObject, finalGridX, finalGridY)) {
+      if (isValidCoordinate(scene, finalGridX, finalGridY)) {
           moveCardToTarget(gameObject.getData('cardKey'), finalGridX, finalGridY, gameObject, scene);
       } else {
           console.error("Invalid move");
@@ -156,7 +156,7 @@ export function moveCardToTarget(cardKey, targetGridX, targetGridY, gameObject, 
   const startY = Math.floor(gameObject.getData('startY') / scene.tile_h);
 
   // Verify if movement is allowed (optional, based on your game logic)
-  if (!isValidMove(scene, startX, startY, targetGridX, targetGridY)) {
+  if (!isValidCoordinate(scene, targetGridX, targetGridY)) {
       console.error("Invalid move");
       return;
   }
@@ -170,10 +170,25 @@ export function moveCardToTarget(cardKey, targetGridX, targetGridY, gameObject, 
       }
   });
 }
-
-function isValidMove(scene, startX, startY, targetGridX, targetGridY) {
+/**
+function isValidCoordinate(scene, startX, startY, targetGridX, targetGridY) {
   return true
 }
+export function isValidCoordinate(gameObject, targetX, targetY, scene) {
+  return new Promise((resolve) => {
+    const startX = Math.floor(gameObject.x / scene.tile_w)
+    const startY = Math.floor(gameObject.y / scene.tile_h)
+
+    scene.pathfinding.findPath(startX, startY, targetX, targetY, (path) => {
+      if (path === null) {
+        resolve(false)
+      } else {
+        resolve(true)
+      }
+    })
+  })
+}
+*/
 
 
 export function moveAlongPath(scene, card, path) {
@@ -211,7 +226,9 @@ export function moveAlongPath(scene, card, path) {
 
 
 export function isValidCoordinate(scene, x, y) {
-  return x >= 0 && x < scene.pathfinding.tilemap.width && y >= 0 && y < scene.pathfinding.tilemap.height;
+  // If the tile has collides set to true, it is not a valid coordinate
+  const tile = scene.pathfinding.tilemap.getTileAt(x, y, true, scene.collisionLayer);
+  return tile ? !tile.properties.collides : false;
 }
 
 export function clearHighlightedArea(card) {
