@@ -1,4 +1,10 @@
 # bash-royale
 A strategic tower defense game. Uses Vite/JS, Phaser and WebGL and free online graphics. This proejct is meant for fun and just to learn more about game development.
 
-![image](https://github.com/smithd36/bash-royale/assets/90289165/8622199d-2ec6-451f-8450-570d708bb64b)
+![image](public/logo.png)
+
+## How to run
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
+4. Open your browser and go to `localhost:3000`

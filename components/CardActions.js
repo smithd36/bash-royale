@@ -1,96 +1,74 @@
-export function setupCards(scene) {
-  const cards = ['glow', 'heat', 'sonny', 'pink', 'rat'];
-  createCardAnimations(scene, cards);
+function updateAnimationDirection(gameObject, dragX, dragY) {
+  const lastX = gameObject.getData('lastX');
+  const lastY = gameObject.getData('lastY');
 
-  const cardPositions = [
-    { x: 32, y: 400 },
-    { x: 96, y: 400 },
-    { x: 160, y: 400 },
-    { x: 224, y: 400 },
-    { x: 288, y: 400 },
-  ];
-
-  scene.cards = cardPositions.map((pos, index) => {
-    const cardKey = cards[index];
-    const card = scene.add.sprite(pos.x, pos.y, cardKey)
-      .setInteractive()
-      .setData('cardKey', cardKey)
-      .setData('movementRange', cardDefinitions[cardKey].range)
-      .setData('movementDirections', cardDefinitions[cardKey].directions)
-      .setData('specialAbility', cardDefinitions[cardKey].special)
-      .play(`${cardKey}_walk_still`);
-  
-    card.on('pointerdown', (pointer) => {
-      selectCard(scene, pointer, card);
-    });
-
-    // Enable dragging
-    scene.input.setDraggable(card);
-  
-    return card;
-  });
-
-  /// Drag events
-  scene.input.on('dragstart', (pointer, gameObject) => {
-    // Store initial positions for calculating direction
-    gameObject.setData('startX', gameObject.x);
-    gameObject.setData('startY', gameObject.y);
-  });
-
-  scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-    const lastX = gameObject.getData('lastX');
-    const lastY = gameObject.getData('lastY');
-
-    // Update position
-    gameObject.x = dragX;
-    gameObject.y = dragY;
-
-    // Calculate direction only if there's a significant change
-    if (Math.abs(dragX - lastX) > 10 || Math.abs(dragY - lastY) > 10) {
-        let direction = determineDirection(lastX, lastY, dragX, dragY);
-        gameObject.anims.play(`${gameObject.getData('cardKey')}_walk_${direction}`, true);
-        gameObject.setData('lastX', dragX);
-        gameObject.setData('lastY', dragY);
-    }
-});
-
-scene.input.on('dragend', (pointer, gameObject) => {
-    const finalGridX = Math.floor(pointer.x / scene.tile_w);
-    const finalGridY = Math.floor(pointer.y / scene.tile_h);
-
-    // Only now, check if the move is valid
-    if (isValidMove(gameObject, finalGridX, finalGridY)) {
-        moveCardToTarget(gameObject.getData('cardKey'), finalGridX, finalGridY, gameObject, scene);
-    } else {
-        console.error("Invalid move");
-        // Optionally, move the gameObject back to its original position
-        gameObject.x = gameObject.getData('startX');
-        gameObject.y = gameObject.getData('startY');
-    }
-  });
-
-  function determineDirection(lastX, lastY, currentX, currentY) {
-    const deltaX = currentX - lastX;
-    const deltaY = currentY - lastY;
-
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        return deltaX > 0 ? 'right' : 'left';
-    } else {
-        return deltaY > 0 ? 'forward' : 'back';  // Adjust these based on your game's coordinate system
-    }
+  if (Math.abs(dragX - lastX) > 10 || Math.abs(dragY - lastY) > 10) {
+      const direction = determineDirection(lastX, lastY, dragX, dragY);
+      gameObject.anims.play(`${gameObject.getData('cardKey')}_walk_${direction}`, true);
+      gameObject.setData('lastX', dragX);
+      gameObject.setData('lastY', dragY);
   }
 }
 
-function createCardAnimations(scene, card) {
+export function addEvents(scene) {
+  scene.input.on('dragstart', (pointer, gameObject) => {
+      gameObject.setData('startX', gameObject.x);
+      gameObject.setData('startY', gameObject.y);
+  });
+
+  scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+      gameObject.x = dragX;
+      gameObject.y = dragY;
+      updateAnimationDirection(gameObject, dragX, dragY);
+  });
+
+  scene.input.on('dragend', (pointer, gameObject) => {
+      const finalGridX = Math.floor(pointer.x / scene.tile_w);
+      const finalGridY = Math.floor(pointer.y / scene.tile_h);
+      if (isValidMove(gameObject, finalGridX, finalGridY)) {
+          moveCardToTarget(gameObject.getData('cardKey'), finalGridX, finalGridY, gameObject, scene);
+      } else {
+          console.error("Invalid move");
+          gameObject.x = gameObject.getData('startX');
+          gameObject.y = gameObject.getData('startY');
+      }
+  });
+
+  scene.input.on('pointerdown', (pointer) => {
+    const clickedCard = scene.cards.find(card => card.getBounds().contains(pointer.x, pointer.y));
+    
+    if (scene.selectedCard && clickedCard !== scene.selectedCard) {
+        // Second click to define target position
+        const targetX = Math.floor(pointer.x / scene.tile_w);
+        const targetY = Math.floor(pointer.y / scene.tile_h);
+        moveCardToTarget(scene.selectedCard.getData('cardKey'), targetX, targetY, scene.selectedCard, scene);
+        clearHighlightedArea(scene.selectedCard); // Optional: clear selection visuals
+        scene.selectedCard = null; // Deselect after moving
+    } else if (clickedCard) {
+        // First click to select character
+        if (scene.selectedCard) {
+            clearHighlightedArea(scene.selectedCard); // Clear previous selections if any
+        }
+        scene.selectedCard = clickedCard; // Set the new selected card
+        selectCard(scene, pointer, clickedCard);
+    }
+  });
+
+}
+
+export function createCardAnimations(scene, card) {
+  // Movement animations
   const directions = ['forward', 'left', 'right', 'back'];
   directions.forEach((dir, index) => {
-      scene.anims.create({
+  scene.anims.create({
           key: `${card}_walk_${dir}`,
           frames: scene.anims.generateFrameNumbers(card, { start: index * 4, end: (index * 4) + 3 }),
           frameRate: 10,
           repeat: -1
       });
   });
+
+  // The player-facing frame when player is not moving
   scene.anims.create({
       key: `${card}_walk_still`,
       frames: scene.anims.generateFrameNumbers(card, { start: 1, end: 1 }),
@@ -99,12 +77,26 @@ function createCardAnimations(scene, card) {
   });
 }
 
+function determineDirection(lastX, lastY, currentX, currentY) {
+  const deltaX = currentX - lastX;
+  const deltaY = currentY - lastY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      return deltaX > 0 ? 'right' : 'left';
+  } else {
+      return deltaY > 0 ? 'forward' : 'back';  // Adjust these based on your game's coordinate system
+  }
+}
+
 export function selectCard(scene, pointer, gameObject) {
   if (scene.selectedCard && scene.selectedCard !== gameObject) {
     clearHighlightedArea(scene.selectedCard);
   }
   scene.selectedCard = gameObject;
   highlightAllowedArea(scene, gameObject);
+
+  gameObject.setData('lastX', gameObject.x);
+  gameObject.setData('lastY', gameObject.y);
 }
 
 export function highlightAllowedArea(scene, card) {
@@ -180,8 +172,6 @@ export function moveCardToTarget(cardKey, targetGridX, targetGridY, gameObject, 
 }
 
 function isValidMove(scene, startX, startY, targetGridX, targetGridY) {
-  // Implement per card logic
-  if (startX === targetGridX && startY === targetGridY) return false;
   return true
 }
 
@@ -219,25 +209,6 @@ export function moveAlongPath(scene, card, path) {
   moveToNextWaypoint();
 }
 
-function determineDirection(currentX, currentY, nextX, nextY) {
-  const deltaX = nextX - currentX;
-  const deltaY = nextY - currentY;
-
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0) {
-          return 'right';  // Moving right
-      } else {
-          return 'left';   // Moving left
-      }
-  } else {
-      if (deltaY > 0) {
-          return 'forward'; // Moving down (or forward in some games)
-      } else {
-          return 'back';   // Moving up (or back in some games)
-      }
-  }
-}
-
 
 export function isValidCoordinate(scene, x, y) {
   return x >= 0 && x < scene.pathfinding.tilemap.width && y >= 0 && y < scene.pathfinding.tilemap.height;
@@ -252,7 +223,7 @@ export function clearHighlightedArea(card) {
 
 // Fr special abilities, we can add more properties to the cardDefinitions object and for now it is basically a placeholder for the special abilities
 // These would be the first steps to implement special abilities for the cards primarily as test
-const cardDefinitions = {
+export const cardDefinitions = {
   'glow': { range: 5, directions: ['forward', 'back', 'left', 'right'], special: 'jump' },
   'heat': { range: 3, directions: ['forward', 'back'], special: 'none' },
   'sonny': { range: 4, directions: ['left', 'right'], special: 'diagonal' },
