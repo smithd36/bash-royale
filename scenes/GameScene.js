@@ -28,14 +28,14 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
-    const { map, bgLayer, object1 } = mapSetup;
+    const { map, bgLayer, collisionLayer } = mapSetup;
 
     if (!map || !bgLayer) {
       console.error('Map or background layer is not defined.');
       return;
     }
 
-    this.pathfinding = new Pathfinding(map, bgLayer, object1);
+    this.pathfinding = new Pathfinding(map, bgLayer, collisionLayer);
 
     // Integrate with the cards
     setupCards(this);

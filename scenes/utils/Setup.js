@@ -5,20 +5,22 @@ export function setupMap() {
   const map = this.make.tilemap({ key: "map" });
 
   const tiles = map.addTilesetImage('grass_tile', 'grass_tile');
-  const forestTree = map.addTilesetImage('forestTree', 'forestTree');
-  const shrubsheet = map.addTilesetImage('shrubsheet', 'shrubsheet');
+  const forest_tree = map.addTilesetImage('forest_tree', 'forest_tree');
+  const shrub = map.addTilesetImage('shrub', 'shrub');
   const tower = map.addTilesetImage('tower1', 'tower1');
+  const bridge = map.addTilesetImage('bridge', 'bridge');
 
-  const bgLayer = map.createLayer('tiles', [tiles, forestTree, shrubsheet, tower], 0, 0);
-  const object1 = map.createLayer('object1', [tiles, forestTree, shrubsheet, tower], 0, 0);
+  const bgLayer = map.createLayer('tiles', [tiles, forest_tree, shrub, tower, bridge], 0, 0);
+  const collisionLayer = map.createLayer('collisionLayer', [tiles, forest_tree, shrub, tower, bridge], 0, 0);
+  collisionLayer.setCollisionByProperty({ collidable: true });
 
-  // Ensure bgLayer and object1 layers are defined and part of the map
-  if (!bgLayer || !object1) {
+  // Ensure bgLayer and collisionLayer layers are defined and part of the map
+  if (!bgLayer || !collisionLayer) {
     console.error('Layers are not defined in the tilemap');
     return null;
   }
 
-  return { map, bgLayer, object1 };
+  return { map, bgLayer, collisionLayer };
 }
 
 export function setupCards(scene) {
@@ -29,16 +31,16 @@ export function setupCards(scene) {
     });
   
     const cardPositions = [
-      { x: 32, y: 400 },
       { x: 96, y: 400 },
+      { x: 96, y: 500 },
       { x: 160, y: 400 },
+      { x: 224, y: 500 },
       { x: 224, y: 400 },
-      { x: 288, y: 400 },
     ];
   
     scene.cards = cardPositions.map((pos, index) => {
       const cardKey = cards[index];
-      const card = scene.add.sprite(pos.x, pos.y, cardKey)
+      const card = scene.physics.add.sprite(pos.x, pos.y, cardKey)
         .setInteractive()
         .setData('cardKey', cardKey)
         .setData('movementRange', cardDefinitions[cardKey].range)
@@ -48,6 +50,9 @@ export function setupCards(scene) {
   
       // Enable dragging
       scene.input.setDraggable(card);
+
+      // Collisions
+      scene.physics.add.collider(card, scene.collisionLayer);
     
       return card;
     });

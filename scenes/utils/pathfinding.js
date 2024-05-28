@@ -1,4 +1,5 @@
 import EasyStar from 'easystarjs';
+import { moveCardToTarget } from '../../components/CardActions';
 
 export class Pathfinding {
   constructor(tilemap, tilesetLayer) {
@@ -40,8 +41,9 @@ export class Pathfinding {
     if (!this.easystar) {
       console.error('EasyStar is not initialized');
       return;
+    } else {
+      this.easystar.findPath(startX, startY, endX, endY, callback);
+      this.easystar.calculate();
     }
-    this.easystar.findPath(startX, startY, endX, endY, callback);
-    this.easystar.calculate();
   }
 }

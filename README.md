@@ -1,4 +1,4 @@
-# bash-royale
+# Bash Royale
 A strategic tower defense game. Uses Vite/JS, Phaser and WebGL and free online graphics. This proejct is meant for fun and just to learn more about game development.
 
 ![image](public/logo.png)
