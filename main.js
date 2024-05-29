@@ -1,6 +1,5 @@
-import "./style.css";
 import Phaser from "phaser";
-import GameScene from "./scenes/GameScene";
+import GameScene from "./src/phaser/scenes/GameScene";
 
 const sizes = {
   width: 320,

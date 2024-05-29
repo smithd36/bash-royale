@@ -1,8 +1,7 @@
 import Phaser from "phaser";
-import { preloadAssets } from "./utils/preloadAssets";
-import { setupMap, setupCards } from "./utils/Setup";
-import { Pathfinding } from "./utils/pathfinding";
-import { addEvents } from "../components/CardActions";
+import { setupMap, setupCards } from "../utils/Setup";
+import { Pathfinding } from "../utils/pathfinding";
+import { addEvents } from "../utils/CardActions";
 
 class GameScene extends Phaser.Scene {
   constructor() {
