@@ -12,7 +12,7 @@ export function setupMap() {
 
   const bgLayer = map.createLayer('tiles', [tiles, forest_tree, shrub, tower, bridge], 0, 0);
   const collisionLayer = map.createLayer('collisionLayer', [tiles, forest_tree, shrub, tower, bridge], 0, 0);
-  collisionLayer.setCollisionByProperty({ collidable: true });
+  collisionLayer.setCollisionByProperty({ collides: true });
 
   // Ensure bgLayer and collisionLayer layers are defined and part of the map
   if (!bgLayer || !collisionLayer) {
@@ -49,11 +49,7 @@ export function setupCards(scene) {
         .play(`${cardKey}_walk_still`);
   
       // Enable dragging
-      scene.input.setDraggable(card);
-
-      // Collisions
-      scene.physics.add.collider(card, scene.collisionLayer);
-    
+      scene.input.setDraggable(card);    
       return card;
     });
   }
