@@ -16,7 +16,7 @@ const config = {
     default: "arcade",
     arcade: {
       gravity: { y: 0 },
-      debug: true,
+      debug: false, // this controls the collision boxes visibility
     },
   },
   scene: [GameScene],

@@ -18,7 +18,29 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    preloadAssets(this);
+    // preloadAssets(this);
+    /**
+     * Decided to preload the character assets here as it 
+     * may end up being more scalable if we have more characters
+     * or maps to add in the future.
+     */
+    this.load.image('forest_tree', 'items/forest_tree.png');
+    this.load.image('grass_tile', 'tiles/basic_tile.png');
+    this.load.image('shrub', 'items/shrub.png');
+    this.load.image('tower1', 'towers/tower.png');
+    this.load.image('bridge', 'items/bridge.png');
+  
+    this.load.tilemapTiledJSON('map', '../../resources/hexMap.json');
+  
+    this.load.spritesheet('glow', 'cards/glow.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('heat', 'cards/heat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('pink', 'cards/pink.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('sonny', 'cards/sonny.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('rat', 'cards/rat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('bird', 'cards/bird.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('clown', 'cards/clown.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('graycat', 'cards/graycat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
+    this.load.spritesheet('orangecat', 'cards/orangecat.png', { frameWidth: this.player_w, frameHeight: this.player_h });
   }
 
   create() {

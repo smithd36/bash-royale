@@ -14,4 +14,8 @@ export function preloadAssets(scene) {
   scene.load.spritesheet('pink', 'cards/pink.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
   scene.load.spritesheet('sonny', 'cards/sonny.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
   scene.load.spritesheet('rat', 'cards/rat.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('bird', 'cards/bird.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('clown', 'cards/clown.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('graycat', 'cards/graycat.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
+  scene.load.spritesheet('orangecat', 'cards/orangecat.png', { frameWidth: scene.player_w, frameHeight: scene.player_h });
 }
