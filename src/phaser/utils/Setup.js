@@ -1,5 +1,4 @@
 // scenes/utils/setupMap.js
-
 export function setupMap() {
   const map = this.make.tilemap({ key: "map" });
 
@@ -77,7 +76,6 @@ export function setupCards(scene) {
         repeat: 0
     });
   }
-
   
 // Fr special abilities, we can add more properties to the cardDefinitions object and for now it is basically a placeholder for the special abilities
 // These would be the first steps to implement special abilities for the cards primarily as test

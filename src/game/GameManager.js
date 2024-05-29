@@ -19,5 +19,4 @@ class GameManager {
       });
       this.nextTurn(); // Start with the first player's turn
     }
-  }
-  
+}

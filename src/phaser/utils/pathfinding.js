@@ -1,5 +1,4 @@
 import EasyStar from 'easystarjs';
-import { moveCardToTarget } from '../../components/CardActions';
 
 export class Pathfinding {
   constructor(tilemap, tilesetLayer) {
